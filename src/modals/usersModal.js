@@ -50,6 +50,11 @@ const userSchema = new mongoose.Schema({
     enum: ["buyer", "seller"],
     default: "buyer",
   },
+  kitchenId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "kitchen",
+    default: null,
+  },
 });
 userSchema.methods.getJWTToken = function () {
   return jwt.sign({ _id: this._id }, process.env.JWT_SECRET, {

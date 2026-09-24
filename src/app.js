@@ -4,6 +4,7 @@ import cors from "cors";
 import AuthRouter from "./routers/AuthRouter.js";
 import KitchenRouter from "./routers/KitchenRouter.js";
 import AppRouter from "./routers/AppRouter.js";
+import PlanRouter from "./routers/PlanRouter.js";
 
 export const app = express();
 
@@ -15,3 +16,4 @@ app.use(cors());
 app.use("/api/v1/auth", AuthRouter);
 app.use("/api/v1/kitchen", KitchenRouter);
 app.use("/api/v1/app", AppRouter);
+app.use("/api/v1/plans", PlanRouter);
