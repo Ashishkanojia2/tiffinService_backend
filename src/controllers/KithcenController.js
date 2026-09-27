@@ -55,9 +55,12 @@ const registerKitchen = async (req, res) => {
     } = req.body;
 
     if (!kitchenName) return errorRes(res, 404, "please enter kitchen name");
-    if (!pricePerMeal) return errorRes(res, 404, "please enter meal per price");
-    if (foodType.length == 0)
-      return errorRes(res, 404, "please select food type");
+    if (pricePerMeal == null) {
+      return errorRes(res, 400, "please enter meal price");
+    }
+    if (!foodType || foodType.length === 0) {
+      return errorRes(res, 400, "please select food type");
+    }
     if (!mealTime) return errorRes(res, 404, "please enter meal time");
     if (!aboutKitchen)
       return errorRes(res, 404, "please add relevant details about kitchen");
@@ -91,18 +94,28 @@ const registerKitchen = async (req, res) => {
       user.kitchenId = createKitchen._id;
       user.verify = true;
 
-      await KitchenDasboardModal.create({
+      const kitchenDashboard = await KitchenDasboardModal.create({
         kitchenId: createKitchen._id,
         lastUpdate: new Date(),
       });
+      createKitchen.kitchenDashboardId = kitchenDashboard._id;
+      await createKitchen.save();
       await user.save();
 
-      return successReSend(
-        res,
-        201,
-        "Kitchen register successfully",
-        createKitchen,
-      );
+      if (createKitchen && kitchenDashboard) {
+        return successReSend(
+          res,
+          201,
+          "Kitchen register successfully",
+          createKitchen,
+        );
+      } else {
+        errorRes(
+          res,
+          400,
+          "Something wents wrong in kitchen or kitchen dashboard",
+        );
+      }
     } else {
       errorRes(res, 404, "user not found!");
     }
@@ -280,7 +293,6 @@ const getKitchenDetails = async (req, res) => {
     errorRes(res, 500, error.message);
   }
 };
-
 
 export {
   registerKitchen,

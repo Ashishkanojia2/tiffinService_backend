@@ -1,74 +1,12 @@
 import { HelpSupportModal } from "../modals/HelpSupportModal.js";
+import { KitchenModal } from "../modals/kitchenModal.js";
+import { mealPlanModal } from "../modals/MealPlanModal.js";
 import { userModal } from "../modals/usersModal.js";
 import {
   errorRes,
   successRes,
   successReSend,
 } from "../utils/globalResponseHandler.js";
-// import { Terms_And_Conditions } from "../utils/rawData/TermAndConditon.js";
-// import { Privacy_Policy } from "../utils/rawData/PrivacyPolicy.js";
-// import { userQueryModal } from "../modals/userQuery.js";
-// import { userModal } from "../modals/usersModal.js";
-
-// const TermsAndConditions = (req, res) => {
-//   try {
-//     const termsData = Terms_And_Conditions.data;
-//     successReSend(
-//       res,
-//       200,
-//       "Terms and Conditions fetched successfully",
-//       termsData,
-//     );
-//   } catch (error) {
-//     console.log("Error:", error);
-//   }
-// };
-
-// const PrivacyPolicy = (req, res) => {
-//   try {
-//     const privacyData = Privacy_Policy.data;
-//     successReSend(res, 200, "Privacy Policy fetched successfully", privacyData);
-//   } catch (error) {
-//     console.log("Error:", error);
-//   }
-// };
-
-// const contactUs = async (req, res) => {
-//   try {
-//     // use the user populated by the `isAuthenticated` middleware
-//     const user = req.user;
-//     console.log("User:", user);
-
-//     if (!user) {
-//       return errorRes(res, 401, "User does not exist. Please register first", null);
-//     }
-//     const { title, message } = req.body;
-//     if (!title || !message) {
-//       return errorRes(res, 400, "Title and message are required", null);
-//     }
-//     const { name, email, _id } = req.user;
-//     const newQuery = await userQueryModal.create({
-//       userid: _id,
-//       name,
-//       email,
-//       title,
-//       message,
-//     });
-
-//     user.query.push(newQuery._id);
-//     await user.save();
-
-//     successRes(
-//       res,
-//       200,
-//       "Query submitted successfully our support team will contact you shortly.",
-//       newQuery,
-//     );
-//   } catch (error) {
-//     errorRes(res, 400, error.message);
-//     console.log("Error::", error);
-//   }
-// };
 const helpAndSupport = async (req, res) => {
   const userId = req?.user._id;
   const { query } = req?.body;
@@ -87,5 +25,44 @@ const helpAndSupport = async (req, res) => {
   user.save();
   successRes(res, 201, "Query submit successfully");
 };
+const getOrderHistoryList = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    if (!userId) return errorRes(res, 403, "Please login");
+    const userData = await userModal.findById({ _id: userId });
+    if (!userData) return errorRes(res, 404, "User not found..!");
 
-export { helpAndSupport };
+    const result = await Promise.all(
+      (userData.SubscriptionPlan || []).map(async (item) => {
+        const mealPlan = await mealPlanModal.findById(item);
+        console.log("mealPlan", mealPlan);
+        if (!mealPlan) return null;
+        const kitchenDetails = await KitchenModal.findById(mealPlan.kitchenId);
+        console.log("kitchenDetails", kitchenDetails);
+
+        if (!kitchenDetails) return null;
+        return {
+          kitchenId: mealPlan?.kitchenId ?? "",
+          kitchenName: kitchenDetails.kitchenName,
+          planType: mealPlan.planType,
+          startingDate: mealPlan.startingDate,
+          amount: mealPlan.planType?.price,
+          endingDate: mealPlan.endingDate,
+        };
+      }),
+    );
+
+    console.log("RESULT ", result);
+
+    return successReSend(
+      res,
+      200,
+      "Order history fetched successfully",
+      result.filter(Boolean),
+    );
+  } catch (error) {
+    errorRes(res, 500, error.message);
+  }
+};
+
+export { helpAndSupport, getOrderHistoryList };

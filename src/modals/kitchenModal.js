@@ -6,6 +6,11 @@ const kitchenSchema = new mongoose.Schema({
     trim: true,
     require: true,
   },
+  kitchenDashboardId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "KitchenDashBoard",
+    default: null,
+  },
   kitchenPhoto: {
     public_id: String,
     url: String,

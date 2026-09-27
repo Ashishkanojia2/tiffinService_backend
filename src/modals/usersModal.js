@@ -39,12 +39,20 @@ const userSchema = new mongoose.Schema({
   address: {
     type: String,
   },
-  isSubscriptionActive: {
-    type: Boolean,
-  },
-  SubscriptionPlan: {
-    type: String,
-  },
+  SubscriptionPlan: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "mealPlan",
+      default: [],
+    },
+  ],
+  orderHistory: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "mealPlan",
+      default: [],
+    },
+  ],
   role: {
     type: String,
     enum: ["buyer", "seller"],

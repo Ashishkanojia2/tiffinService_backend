@@ -16,4 +16,4 @@ app.use(cors());
 app.use("/api/v1/auth", AuthRouter);
 app.use("/api/v1/kitchen", KitchenRouter);
 app.use("/api/v1/app", AppRouter);
-app.use("/api/v1/plans", PlanRouter);
+app.use("/api/v1/plan", PlanRouter);
