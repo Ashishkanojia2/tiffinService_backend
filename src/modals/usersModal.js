@@ -27,6 +27,10 @@ const userSchema = new mongoose.Schema({
     ],
     default: [],
   },
+  rating: {
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Rating" }],
+    default: [],
+  },
   phone: {
     type: String,
   },

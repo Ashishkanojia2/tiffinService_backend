@@ -64,6 +64,14 @@ const kitchenSchema = new mongoose.Schema({
     type: String,
     default: null,
   },
+  imageUrl: {
+    public_id: String,
+    url: String,
+  },
+  rating: {
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Rating" }],
+    default: [],
+  },
 });
 
 export const KitchenModal = mongoose.model("kitchen", kitchenSchema);

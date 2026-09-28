@@ -86,6 +86,10 @@ const registerKitchen = async (req, res) => {
         pinCode,
         landMark,
         userId: user._id,
+        imageUrl: {
+          public_id: "1234567890-qaertyuioo",
+          url: "https://drive.google.com/file/d/1ZLxoXgCSbNB3oBkdeyivoLGZEjOyGFCb/view?usp=sharing",
+        },
       });
       user.address = address;
       user.pinCode = pinCode;
